@@ -22,6 +22,7 @@ public class CarsResource {
     }
 
     @GET
+    @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
     public Response list() {
         return Response.ok().entity(new CollectionResourceCar(carDao.getAll())).build();
@@ -36,7 +37,6 @@ public class CarsResource {
         if (car == null) {
             throw new CustomNotFoundException(7878, "car: " + carId + " is not found");
         }
-
         return car;
     }
 

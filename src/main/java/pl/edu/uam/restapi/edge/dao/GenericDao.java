@@ -15,6 +15,8 @@ public class GenericDao<T> implements Serializable{
         this.objects.add(t);
     }
 
+
+
     public List<T> getAll(){
         return objects;
     }

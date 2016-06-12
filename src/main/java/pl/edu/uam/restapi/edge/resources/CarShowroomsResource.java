@@ -1,5 +1,9 @@
 package pl.edu.uam.restapi.edge.resources;
 
+
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import pl.edu.uam.restapi.edge.dao.CarShowroomDao;
 import pl.edu.uam.restapi.edge.excepction.CustomNotFoundException;
 import pl.edu.uam.restapi.edge.model.Car;
@@ -9,9 +13,8 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+
+
 
 /**
  * Created by ben_a_000 on 2016-06-06.
@@ -32,7 +35,7 @@ public class CarShowroomsResource {
 
 
     @POST
-    @Path("/post")
+    @Path("/addcarshowroom")
     @Consumes("application/json")
     public Response addCarShowroom(@Valid CarShowroom carShowroom){
 
@@ -45,17 +48,50 @@ public class CarShowroomsResource {
 
     }
 
+    @Path("/deletecarshowroom/{ShowroomId}")
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    public void deleteCarShowroomFromId(@PathParam("ShowroomId") int id){
+        carShowroomDao.deleteCarShowroom(id);
+    }
 
 
     @POST
-    @Path("/addcar")
+    @Path("/addcar/{ShowroomId}")
     @Consumes("application/json")
-    public Response addCarToCarshowroom2(@Valid Car car){
-        carShowroomDao.addCarToCarShowroom(car);
-        String result ="Car "+ car + " successfully added to "+ 11 + " car showroom.";
+    public Response addCarToCarshowroom2(@PathParam("ShowroomId") int carShowroomId, @Valid Car car){
+        int status  = carShowroomDao.addCarToCarShowroom(car, carShowroomId);
+        String result_ok ="Car "+ car + " successfully added to "+ carShowroomId + " car showroom.";
+        String result_carShowrrom_not_found ="Sorry, car showroom "+ carShowroomId + " not found.";
+        String result_brands_do_not_match ="Sorry, car showroom "+ carShowroomId + " exists, but brands do not match.";
 
-        return Response.status(201).entity(result).build();
+        if (status == -1){
+            return Response.status(Response.Status.NOT_FOUND).entity(result_carShowrrom_not_found).build();
+        } else if (status == 0) {
+            return Response.status(Response.Status.NOT_FOUND).entity(result_brands_do_not_match).build();
+        }else{
+            return Response.status(Response.Status.CREATED).entity(result_ok).build();
+        }
+    }
 
+
+    @POST
+    @Path("/deletecarfromcarshowroom/{ShowroomId}")
+    @Consumes("application/json")
+    public Response deleteCarFromCarshowroom2(@PathParam("ShowroomId") int carShowroomId, @Valid int carId){
+        int status  = carShowroomDao.deleteCarFromCarshowroom(carShowroomId, carId);
+        String result_ok ="Car "+ carId + " successfully removed from "+ carShowroomId + " car showroom.";
+        String result_carShowrrom_not_found ="Sorry, car showroom "+ carShowroomId + " not found.";
+        String result_car_not_found ="Sorry, car "+ carId + " not found.";
+
+        // WRZUCIC TO W METODE ! !
+        if (status == -1){
+            return Response.status(Response.Status.NOT_FOUND).entity(result_carShowrrom_not_found).build();
+        } else if (status == 0) {
+            return Response.status(Response.Status.NOT_FOUND).entity(result_car_not_found).build();
+        }else{
+            return Response.status(Response.Status.CREATED).entity(result_ok).build();
+        }
     }
 
 
@@ -68,10 +104,7 @@ public class CarShowroomsResource {
         if (carShowroom == null) {
             throw new CustomNotFoundException(7878, "Showroom: " + ShowroomId + " is not found");
         }
-
         return carShowroom;
     }
-
-
 
 }
