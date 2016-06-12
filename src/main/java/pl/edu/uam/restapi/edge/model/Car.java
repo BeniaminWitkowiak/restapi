@@ -1,7 +1,11 @@
 package pl.edu.uam.restapi.edge.model;
 
+import jdk.internal.dynalink.support.AutoDiscovery;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+
+import static pl.edu.uam.restapi.edge.dao.CarDao.brand.AUDI;
 
 /**
  * Created by ben_a_000 on 2016-06-06.
@@ -22,7 +26,9 @@ public class Car implements Serializable {
 
     public Car(int id, String brand, String model, String engineType, double engineSize, double consumption, int productionDate) {
         this.id = id;
-        this.brand = brand;
+        if(brand == AUDI){
+            this.brand = brand;
+        }
         this.model = model;
         this.engineType = engineType;
         this.engineSize = engineSize;

@@ -36,7 +36,7 @@ public class CarShowroomsResource {
 
     @POST
     @Path("/addcarshowroom")
-    @Consumes("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response addCarShowroom(@Valid CarShowroom carShowroom){
 
         carShowroomDao.addCarShowroom(carShowroom);
@@ -58,7 +58,7 @@ public class CarShowroomsResource {
 
     @POST
     @Path("/addcar/{ShowroomId}")
-    @Consumes("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response addCarToCarshowroom2(@PathParam("ShowroomId") int carShowroomId, @Valid Car car){
         int status  = carShowroomDao.addCarToCarShowroom(car, carShowroomId);
         String result_ok ="Car "+ car + " successfully added to "+ carShowroomId + " car showroom.";
@@ -75,9 +75,9 @@ public class CarShowroomsResource {
     }
 
 
-    @POST
+    @DELETE
     @Path("/deletecarfromcarshowroom/{ShowroomId}")
-    @Consumes("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response deleteCarFromCarshowroom2(@PathParam("ShowroomId") int carShowroomId, @Valid int carId){
         int status  = carShowroomDao.deleteCarFromCarshowroom(carShowroomId, carId);
         String result_ok ="Car "+ carId + " successfully removed from "+ carShowroomId + " car showroom.";

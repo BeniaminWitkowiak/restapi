@@ -41,6 +41,7 @@ public class CarShowroomDao extends GenericDao<CarShowroom> {
         int result = -1;
         for(CarShowroom c : this.objects){
             if(c.getId() == showroomId){
+
                 if(c.getCarBrand().toLowerCase().equals(car.getBrand().toLowerCase())){
                     c.addCar(car);
                     result = 1;
