@@ -1,8 +1,5 @@
 package pl.edu.uam.restapi.edge.model;
 
-import pl.edu.uam.restapi.edge.model.Car;
-
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
@@ -11,18 +8,18 @@ import java.util.List;
  */
 public class CarShowroom {
     int id;
-    String adress;
-    String CarBrand;
+    private String adress;
+    private Brand carBrand;
     private List<Car> carsInCarShowroom = new ArrayList<>();
     //protected List<T> objects = new ArrayList<>();
 
     public CarShowroom(){
     }
 
-    public CarShowroom(int id, String adress, String carBrand) {
+    public CarShowroom(int id, String adress, Brand carBrand) {
         this.id = id;
         this.adress = adress;
-        CarBrand = carBrand;
+        this.carBrand = carBrand;
     }
 
     public int getId() {
@@ -33,12 +30,12 @@ public class CarShowroom {
         this.id = id;
     }
 
-    public String getCarBrand() {
-        return CarBrand;
+    public Brand getCarBrand() {
+        return carBrand;
     }
 
-    public void setCarBrand(String carBrand) {
-        CarBrand = carBrand;
+    public void setCarBrand(Brand carBrand) {
+        this.carBrand = carBrand;
     }
 
     public String getAdress() {
@@ -49,11 +46,9 @@ public class CarShowroom {
         this.adress = adress;
     }
 
-
-   public int getNumberOfCars() {
+    public int getNumberOfCars() {
         return carsInCarShowroom.size();
     }
-
 
     public List<Car> getCarsInCarShowroom() {
         return carsInCarShowroom;

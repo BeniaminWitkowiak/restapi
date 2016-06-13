@@ -1,5 +1,7 @@
 package pl.edu.uam.restapi.edge.dao;
 
+import pl.edu.uam.restapi.edge.excepction.CustomNotFoundException;
+import pl.edu.uam.restapi.edge.model.Brand;
 import pl.edu.uam.restapi.edge.model.Car;
 import pl.edu.uam.restapi.edge.model.CarShowroom;
 
@@ -12,22 +14,18 @@ public class CarShowroomDao extends GenericDao<CarShowroom> {
 
     public CarShowroomDao() {
         super();
-        this.save(new CarShowroom(11, "ul. Nowowiejskiego 11/7", "Volvo"));
-        this.save(new CarShowroom(12, "os. Jana III Sobieskiego 125", "BMW"));
-        this.save(new CarShowroom(13, "pl. Andersa", "Alfa Romeo"));
+        this.save(new CarShowroom(11, "ul. Nowowiejskiego 11/7", Brand.AUDI));
+        this.save(new CarShowroom(12, "os. Jana III Sobieskiego 125", Brand.BMW));
+        this.save(new CarShowroom(13, "pl. Andersa", Brand.FIAT));
     }
 
     public CarShowroom getById(int id){
-        for(CarShowroom c : this.objects){
-            if(c.getId() == id){
-                return c;
-            }
-        }
-        return null;
+        return this.objects.stream().filter(carShowroom -> carShowroom.getId() == id).findFirst().orElse(null);
     }
 
-    public void addCarShowroom(CarShowroom carShowroom){
+    public CarShowroom addCarShowroom(CarShowroom carShowroom){
         this.save(carShowroom);
+        return carShowroom;
     }
 
     public void deleteCarShowroom(int id){
@@ -37,43 +35,33 @@ public class CarShowroomDao extends GenericDao<CarShowroom> {
             }
         }
     }
-    public int addCarToCarShowroom(Car car, int showroomId){
-        int result = -1;
-        for(CarShowroom c : this.objects){
-            if(c.getId() == showroomId){
-
-                if(c.getCarBrand().toLowerCase().equals(car.getBrand().toLowerCase())){
-                    c.addCar(car);
-                    result = 1;
-                }else{
-                    result = 0;
-                }
-            }
+    public void addCarToCarShowroom(Car car, int showroomId) {
+        CarShowroom carShowroom = this.getById(showroomId);
+        if (carShowroom == null) {
+            throw new CustomNotFoundException(0, "There is no carShowroom with id"+showroomId);
         }
-        //if result - 1 then CarShowroom not found
-        //IF result 0 THEN CarShowroom exists but brands do not match
-        //IF result 1 THEN CarShowroom exists and brands match
-        return result;
+
+        if(carShowroom.getCarBrand() != car.getBrand()){
+            //inny error lepiej
+            throw new CustomNotFoundException(0, "The car showroom brand '" + carShowroom.getCarBrand() + "' does not match car barnd '" + car.getBrand() + "'");
+        }
+
+        carShowroom.addCar(car);
     }
 
-    public int deleteCarFromCarshowroom(int carShowroomId, int carId){
-        int result = -1;
+    public CarShowroom deleteCarFromCarshowroom(int carShowroomId, int carId) {
+        CarShowroom carShowroom = this.getById(carShowroomId);
 
-        for(int i=0; i<objects.size(); i++){//szukamy odpowiedniego salonu
-            if (objects.get(i).getId() == carShowroomId){//znalezlismy salon z ktoreog chcemy usunac samochod
-                result = 0;
-                List<Car> carsFromProperCarShowroom = objects.get(i).getCarsInCarShowroom();
-                for(int j=0; j<carsFromProperCarShowroom.size(); j++){//szukamy w liscie wszystkich samochodow
-                    if(carsFromProperCarShowroom.get(j).getId() == carId){//jesli znalezlismy nasz samochod
-                        result = 1;
-                        carsFromProperCarShowroom.remove(j);
-                    }
-                }
+        if (carShowroom == null) {
+            throw new CustomNotFoundException(0, "There is no carShowroom with id" + carShowroomId);
+        }
+
+        List<Car> carsInCarShowroom = carShowroom.getCarsInCarShowroom();
+        for(int j = 0; j< carsInCarShowroom.size(); j++) {//szukamy w liscie wszystkich samochodow
+            if (carsInCarShowroom.get(j).getId() == carId) {//jesli znalezlismy nasz samochod
+                carsInCarShowroom.remove(j);
             }
         }
-        // IF result -1 THEN carShowroon not found
-        // IF result 0 THEN carshowroom found but car not found
-        // IF result 1 THEN success ! ! !
-        return result;
+        return carShowroom;
     }
 }

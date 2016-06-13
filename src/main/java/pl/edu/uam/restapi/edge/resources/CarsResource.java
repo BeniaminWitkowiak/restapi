@@ -28,8 +28,8 @@ public class CarsResource {
         return Response.ok().entity(new CollectionResourceCar(carDao.getAll())).build();
     }
 
-    @Path("/{carId}")
     @GET
+    @Path("/{carId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Car getCarFromId(@PathParam("carId") int carId) throws Exception{
         Car car = carDao.getById(carId);

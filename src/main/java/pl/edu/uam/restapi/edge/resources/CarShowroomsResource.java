@@ -29,6 +29,12 @@ public class CarShowroomsResource {
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Tries to update teacher with given id, or creates new teacher",
+            notes = "If user with given first and last name (passed in teacher object) exists it does nothing. If there is no teacher with given id it creates new teacher, in other case it updates the already existing one")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Teacher Created"),
+            @ApiResponse(code = 200, message = "Teacher updated"),
+            @ApiResponse(code = 409, message = "There is already a teacher like this in our db.") })
     public Response list() {
         return Response.ok().entity(new CollectionResourceCarShowroom(carShowroomDao.getAll())).build();
     }
@@ -38,20 +44,15 @@ public class CarShowroomsResource {
     @Path("/addcarshowroom")
     @Produces(MediaType.APPLICATION_JSON)
     public Response addCarShowroom(@Valid CarShowroom carShowroom){
-
-        carShowroomDao.addCarShowroom(carShowroom);
-        String result = "carShowroom created : " +
-                carShowroom.getId() + " " +
-                carShowroom.getAdress() + " " +
-                carShowroom.getCarBrand();
-        return Response.status(201).entity(result).build();
+        CarShowroom saved = carShowroomDao.addCarShowroom(carShowroom);
+        return Response.status(Response.Status.CREATED).entity(saved).build();
 
     }
 
-    @Path("/deletecarshowroom/{ShowroomId}")
     @DELETE
+    @Path("{showroomId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public void deleteCarShowroomFromId(@PathParam("ShowroomId") int id){
+    public void deleteCarShowroomFromId(@PathParam("showroomId") int id){
         carShowroomDao.deleteCarShowroom(id);
     }
 
@@ -60,51 +61,29 @@ public class CarShowroomsResource {
     @Path("/addcar/{ShowroomId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response addCarToCarshowroom2(@PathParam("ShowroomId") int carShowroomId, @Valid Car car){
-        int status  = carShowroomDao.addCarToCarShowroom(car, carShowroomId);
-        String result_ok ="Car "+ car + " successfully added to "+ carShowroomId + " car showroom.";
-        String result_carShowrrom_not_found ="Sorry, car showroom "+ carShowroomId + " not found.";
-        String result_brands_do_not_match ="Sorry, car showroom "+ carShowroomId + " exists, but brands do not match.";
-
-        if (status == -1){
-            return Response.status(Response.Status.NOT_FOUND).entity(result_carShowrrom_not_found).build();
-        } else if (status == 0) {
-            return Response.status(Response.Status.NOT_FOUND).entity(result_brands_do_not_match).build();
-        }else{
-            return Response.status(Response.Status.CREATED).entity(result_ok).build();
-        }
+        carShowroomDao.addCarToCarShowroom(car, carShowroomId);
+        return Response.ok().entity(carShowroomDao.getById(carShowroomId)).build();
     }
 
 
     @DELETE
-    @Path("/deletecarfromcarshowroom/{ShowroomId}")
+    @Path("/deleteCar/{showroomId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteCarFromCarshowroom2(@PathParam("ShowroomId") int carShowroomId, @Valid int carId){
-        int status  = carShowroomDao.deleteCarFromCarshowroom(carShowroomId, carId);
-        String result_ok ="Car "+ carId + " successfully removed from "+ carShowroomId + " car showroom.";
-        String result_carShowrrom_not_found ="Sorry, car showroom "+ carShowroomId + " not found.";
-        String result_car_not_found ="Sorry, car "+ carId + " not found.";
-
-        // WRZUCIC TO W METODE ! !
-        if (status == -1){
-            return Response.status(Response.Status.NOT_FOUND).entity(result_carShowrrom_not_found).build();
-        } else if (status == 0) {
-            return Response.status(Response.Status.NOT_FOUND).entity(result_car_not_found).build();
-        }else{
-            return Response.status(Response.Status.CREATED).entity(result_ok).build();
-        }
+    public Response deleteCarFromCarshowroom2(@PathParam("showroomId") int carShowroomId, @Valid int carId){
+        CarShowroom carShowroom = carShowroomDao.deleteCarFromCarshowroom(carShowroomId, carId);
+        return Response.ok().entity(carShowroom).build();
     }
 
-
-    @Path("/{ShowroomId}")
     @GET
+    @Path("/{ShowroomId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public CarShowroom getCarShowroomFromId(@PathParam("ShowroomId") int ShowroomId) throws Exception{
+    public Response getCarShowroomFromId(@PathParam("ShowroomId") int ShowroomId) throws Exception{
         CarShowroom carShowroom = carShowroomDao.getById(ShowroomId);
 
         if (carShowroom == null) {
             throw new CustomNotFoundException(7878, "Showroom: " + ShowroomId + " is not found");
         }
-        return carShowroom;
+        return Response.status(Response.Status.CREATED).entity(carShowroom).build();
     }
 
 }

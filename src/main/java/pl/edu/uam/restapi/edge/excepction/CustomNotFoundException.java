@@ -3,6 +3,7 @@ package pl.edu.uam.restapi.edge.excepction;
 import pl.edu.uam.restapi.edge.model.ErrorResponse;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
@@ -24,6 +25,6 @@ public class CustomNotFoundException extends WebApplicationException {
     public CustomNotFoundException(int code, String message) {
         super(Response.status(
                 NOT_FOUND).
-                entity(new ErrorResponse(code, message)).type("application/json").build());
+                entity(new ErrorResponse(code, message)).type(MediaType.APPLICATION_JSON).build());
     }
 }

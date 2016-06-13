@@ -5,7 +5,7 @@ import jdk.internal.dynalink.support.AutoDiscovery;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
-import static pl.edu.uam.restapi.edge.dao.CarDao.brand.AUDI;
+
 
 /**
  * Created by ben_a_000 on 2016-06-06.
@@ -13,9 +13,9 @@ import static pl.edu.uam.restapi.edge.dao.CarDao.brand.AUDI;
 @XmlRootElement
 public class Car implements Serializable {
     private int id;
-    private String brand;
+    private Brand brand;
     private String model;
-    private String engineType;
+    private EngineType engineType;
     private double engineSize;
     private double consumption;
     private int productionDate;
@@ -24,18 +24,15 @@ public class Car implements Serializable {
     public Car(){
     }
 
-    public Car(int id, String brand, String model, String engineType, double engineSize, double consumption, int productionDate) {
+    public Car(int id, Brand brand, String model, EngineType engineType, double engineSize, double consumption, int productionDate) {
         this.id = id;
-        if(brand == AUDI){
-            this.brand = brand;
-        }
+        this.brand = brand;
         this.model = model;
         this.engineType = engineType;
         this.engineSize = engineSize;
         this.consumption = consumption;
         this.productionDate = productionDate;
     }
-
 
 
     public int getId() {
@@ -46,11 +43,11 @@ public class Car implements Serializable {
         this.id = id;
     }
 
-    public String getBrand() {
+    public Brand getBrand() {
         return brand;
     }
 
-    public void setBrand(String brand) {
+    public void setBrand(Brand brand) {
         this.brand = brand;
     }
 
@@ -62,11 +59,11 @@ public class Car implements Serializable {
         this.model = model;
     }
 
-    public String getEngineType() {
+    public EngineType getEngineType() {
         return engineType;
     }
 
-    public void setEngineType(String engineType) {
+    public void setEngineType(EngineType engineType) {
         this.engineType = engineType;
     }
 
